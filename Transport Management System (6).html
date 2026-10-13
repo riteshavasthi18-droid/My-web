@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="hi" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rudransh Roadlines - Transport Management System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; font-size: 11pt; color: #000; }
+            .printable-bilty {
+                box-shadow: none !important;
+                border: 2px solid #000 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col min-h-screen text-slate-800 bg-slate-50">
+
+    <!-- Header / Navigation -->
+    <header class="bg-slate-900 text-white shadow-md no-print sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Branding -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('new-bilty')">
+                    <div class="bg-amber-500 p-2 rounded-lg text-slate-900 shadow">
+                        <i class="fa-solid fa-truck-fast text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg leading-tight uppercase tracking-wider text-amber-400">रुद्रांश रोडलाइंस</h1>
+                        <p class="text-xs text-slate-400">Rudransh Roadlines - Fleet & Logistics</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Tabs -->
+                <nav class="hidden md:flex space-x-1">
+                    <button onclick="switchTab('new-bilty')" id="nav-new-bilty" class="nav-btn px-3.5 py-2 rounded-md text-sm font-medium bg-slate-800 text-amber-400 flex items-center space-x-2">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <span>नई बिल्टी / LR</span>
+                    </button>
+                    <button onclick="switchTab('vehicle-search')" id="nav-vehicle-search" class="nav-btn px-3.5 py-2 rounded-md text-sm font-medium hover:bg-slate-800 text-slate-300 flex items-center space-x-2">
+                        <i class="fa-solid fa-truck text-amber-400"></i>
+                        <span>गाड़ी का हिसाब</span>
+                    </button>
+                    <button onclick="switchTab('trips-list')" id="nav-trips-list" class="nav-btn px-3.5 py-2 rounded-md text-sm font-medium hover:bg-slate-800 text-slate-300 flex items-center space-x-2">
+                        <i class="fa-solid fa-list-check"></i>
+                        <span>सभी ट्रिप्स</span>
+                    </button>
+                    <button onclick="switchTab('expenses')" id="nav-expenses" class="nav-btn px-3.5 py-2 rounded-md text-sm font-medium hover:bg-slate-800 text-slate-300 flex items-center space-x-2">
+                        <i class="fa-solid fa-gas-pump"></i>
+                        <span>खर्चा & प्रॉफिट</span>
+                    </button>
+                </nav>
+
+                <div class="hidden sm:block no-print">
+                    <button onclick="openNewBiltyForm()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-4 py-2 rounded-lg text-sm shadow flex items-center space-x-2 transition">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>+ LR / Bilty</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div class="md:hidden bg-slate-800 border-t border-slate-700 flex justify-around py-2 px-1 text-xs">
+            <button onclick="switchTab('new-bilty')" id="mob-nav-new-bilty" class="flex flex-col items-center py-1 text-amber-400 font-medium">
+                <i class="fa-solid fa-file-invoice text-base mb-0.5"></i>
+                <span>नई बिल्टी</span>
+            </button>
+            <button onclick="switchTab('vehicle-search')" id="mob-nav-vehicle-search" class="flex flex-col items-center py-1 text-slate-400">
+                <i class="fa-solid fa-truck text-base mb-0.5"></i>
+                <span>गाड़ी हिसाब</span>
+            </button>
+            <button onclick="switchTab('trips-list')" id="mob-nav-trips-list" class="flex flex-col items-center py-1 text-slate-400">
+                <i class="fa-solid fa-list-check text-base mb-0.5"></i>
+                <span>ट्रिप्स</span>
+            </button>
+            <button onclick="switchTab('expenses')" id="mob-nav-expenses" class="flex flex-col items-center py-1 text-slate-400">
+                <i class="fa-solid fa-gas-pump text-base mb-0.5"></i>
+                <span>खर्चा</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 no-print space-y-8">
+
+        <!-- SECTION 1: NEW BILTY / LR FORM -->
+        <section id="tab-new-bilty" class="tab-content">
+            <div class="max-w-4xl mx-auto bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
+                <div class="border-b border-slate-200 pb-4 mb-6 flex flex-wrap justify-between items-center gap-2">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900">रुद्रांश रोडलाइंस - नई बिल्टी / LR & इनवॉइस एंट्री</h2>
+                        <p class="text-xs text-slate-500">Advance Cheque & Balance Cheque details ke saath transport entry karein</p>
+                    </div>
+                    <span class="bg-amber-100 text-amber-900 font-bold px-3.5 py-1.5 rounded-full text-xs">
+                        LR No: <span id="auto-lr-display">LR-1001</span>
+                    </span>
+                </div>
+
+                <form id="biltyForm" onsubmit="handleFormSubmit(event)" class="space-y-6">
+                    <input type="hidden" id="editing-id" value="">
+
+                    <!-- Document Numbers & Dates -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">LR नंबर *</label>
+                            <input type="text" id="lrNumber" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm bg-white font-semibold" placeholder="LR-1001">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">इनवॉइस नंबर (Invoice No) *</label>
+                            <input type="text" id="invoiceNumber" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm bg-white font-bold text-indigo-900" placeholder="INV-2026-001">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">दिनांक (Date) *</label>
+                            <input type="date" id="bookingDate" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm bg-white">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">ट्रिप स्टेटस</label>
+                            <select id="tripStatus" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm bg-white">
+                                <option value="In-Transit">In-Transit (रास्ते में है)</option>
+                                <option value="Pending Pickup">Pending Pickup</option>
+                                <option value="Delivered">Delivered (पहुँच गया)</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Consignor & Consignee -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+                                <i class="fa-solid fa-user-tag text-indigo-600"></i> माल भेजने वाला (Consignor / Party)
+                            </h3>
+                            <input type="text" id="consignorName" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm bg-white" placeholder="पार्टी का नाम">
+                            <input type="tel" id="consignorPhone" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm bg-white" placeholder="फोन नंबर">
+                        </div>
+                        <div class="space-y-3">
+                            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide flex items-center gap-2">
+                                <i class="fa-solid fa-user-check text-emerald-600"></i> माल पाने वाला (Consignee)
+                            </h3>
+                            <input type="text" id="consigneeName" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm bg-white" placeholder="रिसीवर का नाम">
+                            <input type="tel" id="consigneePhone" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm bg-white" placeholder="फोन नंबर">
+                        </div>
+                    </div>
+
+                    <!-- Route & Vehicle -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">कहाँ से (From Location) *</label>
+                            <input type="text" id="fromCity" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm" placeholder="Mumbai">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">कहाँ तक (To Location) *</label>
+                            <input type="text" id="toCity" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm" placeholder="Delhi">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">गाड़ी नंबर (Vehicle Truck No) *</label>
+                            <input type="text" id="truckNumber" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm uppercase font-bold text-slate-900" placeholder="MH-04-AB-1234">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">ड्राइवर नाम व फोन</label>
+                            <input type="text" id="driverInfo" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm" placeholder="सुरेश - 9876543210">
+                        </div>
+                    </div>
+
+                    <!-- Freight Calculation & Weight -->
+                    <div class="border border-slate-200 p-4 rounded-xl space-y-4">
+                        <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wide">सामान एवं भाड़ा कैलकुलेशन</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">सामान विवरण (Goods Type)</label>
+                                <input type="text" id="goodsDescription" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm" placeholder="Steel / Grain / Pipes">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">वजन (Weight in Tons/Kgs)</label>
+                                <input type="number" step="0.01" id="goodsWeight" oninput="calculateFreight()" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm" placeholder="10">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">भाड़ा रेट (Freight Rate ₹/Ton)</label>
+                                <input type="number" id="freightRate" oninput="calculateFreight()" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm" placeholder="2500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">कुल भाड़ा (Total Freight ₹) *</label>
+                                <input type="number" id="totalFreight" oninput="calculateFreight()" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm font-bold text-slate-900 bg-amber-50" placeholder="0">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SEPARATED ADVANCE & BALANCE PAYMENT SECTIONS -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- 1. ADVANCE PAYMENT DETAILS -->
+                        <div class="bg-emerald-50/70 border border-emerald-200 p-4 rounded-xl space-y-3">
+                            <h3 class="text-xs font-bold text-emerald-950 uppercase tracking-wide flex items-center gap-2 border-b border-emerald-200 pb-2">
+                                <i class="fa-solid fa-money-bill-wave text-emerald-600"></i> 1. एडवांस पेमेंट विवरण (Advance Payment)
+                            </h3>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">एडवांस मिला (Advance Amount ₹)</label>
+                                <input type="number" id="advancePaid" oninput="calculateFreight()" class="w-full border border-emerald-300 rounded-lg p-2.5 text-sm bg-white font-bold text-emerald-800" placeholder="0">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">एडवांस पेमेंट मोड (Advance Method)</label>
+                                <select id="advPaymentMethod" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm bg-white">
+                                    <option value="Cash">Cash (नकद)</option>
+                                    <option value="NEFT">NEFT / RTGS</option>
+                                    <option value="Cheque">Cheque (चेक)</option>
+                                    <option value="UPI">UPI / GPay / PhonePe</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">एडवांस Cheque No. / Ref UTR No.</label>
+                                <input type="text" id="advChequeNumber" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm bg-white" placeholder="e.g. Adv Cheque #102938 / UTR9988">
+                            </div>
+                        </div>
+
+                        <!-- 2. BALANCE PAYMENT DETAILS -->
+                        <div class="bg-rose-50/70 border border-rose-200 p-4 rounded-xl space-y-3">
+                            <h3 class="text-xs font-bold text-rose-950 uppercase tracking-wide flex items-center gap-2 border-b border-rose-200 pb-2">
+                                <i class="fa-solid fa-wallet text-rose-600"></i> 2. बाकी बैलेंस विवरण (Balance Payment)
+                            </h3>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">बाकी राशि (Balance Amount Due ₹)</label>
+                                <input type="number" id="balanceAmount" readonly class="w-full border border-rose-200 bg-white rounded-lg p-2.5 text-sm font-bold text-rose-700" placeholder="0">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">बाकी पेमेंट मोड (Balance Method)</label>
+                                <select id="balPaymentMethod" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm bg-white">
+                                    <option value="To Pay (To Be Received)">To Pay (पहुँचाने पर प्राप्त होगा)</option>
+                                    <option value="Cash">Cash (नकद)</option>
+                                    <option value="NEFT">NEFT / RTGS</option>
+                                    <option value="Cheque">Cheque (चेक)</option>
+                                    <option value="UPI">UPI / Online</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">बाकी Cheque No. / Ref UTR No.</label>
+                                <input type="text" id="balChequeNumber" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm bg-white" placeholder="e.g. Bal Cheque #554411 / UTR7766">
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="flex justify-end gap-3 pt-2">
+                        <button type="button" onclick="resetForm()" class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-700 hover:bg-slate-50 text-sm font-medium">
+                            रीसेट (Reset)
+                        </button>
+                        <button type="submit" class="px-6 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-sm shadow flex items-center space-x-2">
+                            <i class="fa-solid fa-check"></i>
+                            <span id="save-btn-text">सेव करें & बिल्टी बनाएं (Save & Print)</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- SECTION 2: VEHICLE SEARCH & LEDGER -->
+        <section id="tab-vehicle-search" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-truck text-amber-500"></i> गाड़ी का सम्पूर्ण हिसाब (Vehicle Search & History Ledger)
+                        </h2>
+                        <p class="text-xs text-slate-500">ट्रक नंबर डालें - उसकी सभी ट्रिप्स, इनवॉइस, Advance/Balance Cheque No, खर्चे और मुनाफा देखें</p>
+                    </div>
+                </div>
+
+                <!-- Search Input -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400"></i>
+                        <input type="text" id="vehicle-search-input" onkeyup="searchVehicleLedger()" placeholder="गाड़ी का नंबर लिखें (उदा. MH-04-GP-5512)..." class="w-full pl-10 pr-4 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none uppercase font-bold text-slate-900">
+                    </div>
+                    <button onclick="searchVehicleLedger()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-2.5 rounded-xl text-sm shadow flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-search"></i>
+                        <span>हिसाब खोजें</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Vehicle Summary Output -->
+            <div id="vehicle-ledger-results" class="space-y-6">
+                <!-- Populated dynamically -->
+            </div>
+        </section>
+
+        <!-- SECTION 3: ALL TRIPS LIST -->
+        <section id="tab-trips-list" class="tab-content hidden space-y-4">
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="relative w-full md:w-96">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400"></i>
+                    <input type="text" id="search-input" onkeyup="filterTrips()" placeholder="LR No, Invoice No, Cheque No, ट्रक नं खोजें..." class="w-full pl-9 pr-4 py-2 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+                <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                    <select id="status-filter" onchange="filterTrips()" class="border border-slate-300 text-sm rounded-xl px-3 py-2 bg-white">
+                        <option value="ALL">सब स्टेटस</option>
+                        <option value="In-Transit">In-Transit</option>
+                        <option value="Delivered">Delivered</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm text-slate-600">
+                        <thead class="bg-slate-900 text-white text-xs font-semibold uppercase">
+                            <tr>
+                                <th class="px-4 py-3.5">LR No / Invoce No</th>
+                                <th class="px-4 py-3.5">तारीख / पार्टी</th>
+                                <th class="px-4 py-3.5">रूट & गाड़ी</th>
+                                <th class="px-4 py-3.5">एडवांस डिटेल (Cheque/Ref)</th>
+                                <th class="px-4 py-3.5">बाकी डिटेल (Cheque/Ref)</th>
+                                <th class="px-4 py-3.5">कुल भाड़ा</th>
+                                <th class="px-4 py-3.5 text-center">एक्शन</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-trips-table-body" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 4: EXPENSES & PROFIT -->
+        <section id="tab-expenses" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Add Expense Entry -->
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-receipt text-amber-500"></i> ट्रिप का खर्चा दर्ज करें
+                    </h3>
+                    <form id="expenseForm" onsubmit="handleExpenseSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">संबंधित LR / इनवॉइस चुनें *</label>
+                            <select id="exp-lr-select" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm">
+                                <!-- Populated dynamically -->
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">डीजल/फ्यूल खर्चा (Fuel ₹)</label>
+                            <input type="number" id="exp-diesel" placeholder="0" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">टोल व टैक्स (Toll ₹)</label>
+                            <input type="number" id="exp-toll" placeholder="0" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">ड्राइवर भत्ता (Driver Bhatta ₹)</label>
+                            <input type="number" id="exp-driver" placeholder="0" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">अन्य खर्चा (Other Expense ₹)</label>
+                            <input type="number" id="exp-other" placeholder="0" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm">
+                        </div>
+                        <button type="submit" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-lg text-sm shadow">
+                            खर्चा अपडेट करें
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Trip Profit Table -->
+                <div class="lg:col-span-2 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slate-900 border-b border-slate-100 pb-3 flex items-center justify-between">
+                        <span>ट्रिप-वाइज़ प्रॉफिट शीट (Freight - Expenses)</span>
+                        <span class="text-xs font-normal text-slate-500">Rudransh Roadlines Profit Ledger</span>
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-600">
+                            <thead class="bg-slate-100 text-xs text-slate-700 font-semibold uppercase">
+                                <tr>
+                                    <th class="p-3">LR / Invoice / गाड़ी</th>
+                                    <th class="p-3">कुल भाड़ा</th>
+                                    <th class="p-3">कुल खर्चा</th>
+                                    <th class="p-3">शुद्ध मुनाफा (Net Profit)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expense-profit-tbody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- BOTTOM SECTION: DASHBOARD SUMMARY CARDS (Placed at Niche/Bottom) -->
+        <section id="dashboard-bottom-summary" class="pt-6 border-t border-slate-200 space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-amber-500"></i> रुद्रांश रोडलाइंस - कुल बिज़नेस समरी (Dashboard Summary)
+                    </h3>
+                    <p class="text-xs text-slate-500">सभी ट्रिप्स का ओवरऑल लाइव हिसाब</p>
+                </div>
+                <div class="flex space-x-2">
+                    <button onclick="exportData()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 text-xs px-3 py-1.5 rounded-lg flex items-center space-x-1">
+                        <i class="fa-solid fa-download"></i>
+                        <span>Export Backup</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPI Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">कुल बुकिंग (Total Trips)</p>
+                        <h3 class="text-2xl font-black text-slate-900 mt-1" id="dash-total-bookings">0</h3>
+                        <p class="text-xs text-slate-500 mt-1"><span class="text-emerald-600 font-bold" id="dash-delivered-count">0</span> Delivered</p>
+                    </div>
+                    <div class="bg-indigo-50 text-indigo-600 p-3 rounded-xl">
+                        <i class="fa-solid fa-boxes-packing text-2xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">चालू गाड़ियां (In-Transit)</p>
+                        <h3 class="text-2xl font-black text-amber-600 mt-1" id="dash-active-trips">0</h3>
+                        <p class="text-xs text-slate-500 mt-1">रास्ते में चालू</p>
+                    </div>
+                    <div class="bg-amber-50 text-amber-600 p-3 rounded-xl">
+                        <i class="fa-solid fa-truck-moving text-2xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">कुल भाड़ा (Total Freight)</p>
+                        <h3 class="text-2xl font-black text-emerald-600 mt-1">₹<span id="dash-total-revenue">0</span></h3>
+                        <p class="text-xs text-slate-500 mt-1">Advance Recd: ₹<span id="dash-advance-paid">0</span></p>
+                    </div>
+                    <div class="bg-emerald-50 text-emerald-600 p-3 rounded-xl">
+                        <i class="fa-solid fa-indian-rupee-sign text-2xl"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-wider text-slate-500">बाकी बैलेंस (Total Pending)</p>
+                        <h3 class="text-2xl font-black text-rose-600 mt-1">₹<span id="dash-pending-balance">0</span></h3>
+                        <p class="text-xs text-slate-500 mt-1">पार्टी से लेना बाकी</p>
+                    </div>
+                    <div class="bg-rose-50 text-rose-600 p-3 rounded-xl">
+                        <i class="fa-solid fa-wallet text-2xl"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- PRINTABLE BILTY MODAL -->
+    <div id="bilty-print-modal" class="hidden fixed inset-0 bg-slate-900/80 z-50 flex items-center justify-center p-4 overflow-y-auto no-print-bg">
+        <div class="bg-white rounded-2xl max-w-3xl w-full p-6 space-y-4 shadow-2xl relative">
+            <div class="flex justify-between items-center no-print border-b pb-3">
+                <h3 class="font-bold text-slate-800">लारी रसीद पूर्वावलोकन (Print / PDF Preview)</h3>
+                <div class="flex space-x-2">
+                    <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-4 py-2 rounded-lg text-sm flex items-center space-x-2">
+                        <i class="fa-solid fa-print"></i>
+                        <span>प्रिंट / Save PDF</span>
+                    </button>
+                    <button onclick="closeBiltyModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-lg text-sm font-semibold">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PRINTABLE LR CONTAINER -->
+            <div id="printable-area" class="printable-bilty border-2 border-slate-900 p-6 rounded-lg text-slate-900 bg-white">
+                <div class="border-b-2 border-slate-900 pb-3 mb-3 flex justify-between items-start">
+                    <div>
+                        <h1 class="text-2xl font-black tracking-tight text-slate-900 uppercase">रुद्रांश रोडलाइंस</h1>
+                        <p class="text-xs font-bold text-slate-700">RUDRANSH ROADLINES - FLEET & TRANSPORT CONTRACTOR</p>
+                        <p class="text-xs text-slate-600">हेड ऑफिस: ट्रांसपोर्ट नगर, रिंग रोड | मो: 9876543210</p>
+                    </div>
+                    <div class="text-right border-l-2 border-slate-900 pl-4">
+                        <div class="text-lg font-bold text-rose-700">LORRY RECEIPT (LR)</div>
+                        <div class="text-xs font-bold mt-1">LR No: <span id="pr-lr-no" class="font-extrabold text-slate-900">LR-1001</span></div>
+                        <div class="text-xs font-bold text-slate-800">Invoice No: <span id="pr-invoice-no" class="font-bold text-indigo-900">INV-001</span></div>
+                        <div class="text-xs font-medium">Date: <span id="pr-date">13/10/2026</span></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 border-b-2 border-slate-900 pb-3 mb-3 text-xs">
+                    <div class="border-r border-slate-400 pr-2">
+                        <p class="font-bold uppercase text-slate-500 mb-1">CONSIGNOR (माल भेजने वाला):</p>
+                        <p class="font-bold text-sm" id="pr-consignor-name">-</p>
+                        <p id="pr-consignor-phone">Ph: -</p>
+                        <p class="mt-2 font-semibold text-slate-700">From: <span id="pr-from-city" class="font-bold text-slate-900">-</span></p>
+                    </div>
+                    <div class="pl-2">
+                        <p class="font-bold uppercase text-slate-500 mb-1">CONSIGNEE (माल पाने वाला):</p>
+                        <p class="font-bold text-sm" id="pr-consignee-name">-</p>
+                        <p id="pr-consignee-phone">Ph: -</p>
+                        <p class="mt-2 font-semibold text-slate-700">To: <span id="pr-to-city" class="font-bold text-slate-900">-</span></p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-100 border border-slate-300 p-2 rounded mb-3 grid grid-cols-2 gap-2 text-xs font-medium">
+                    <div><strong>ट्रक नंबर (Truck No):</strong> <span id="pr-truck-no" class="font-bold uppercase">-</span></div>
+                    <div><strong>ड्राइवर (Driver):</strong> <span id="pr-driver">-</span></div>
+                </div>
+
+                <table class="w-full border-collapse border border-slate-900 text-xs mb-3">
+                    <thead>
+                        <tr class="bg-slate-200 text-slate-900 border-b border-slate-900">
+                            <th class="border border-slate-900 p-2 text-left">विवरण (Goods)</th>
+                            <th class="border border-slate-900 p-2 text-center">वजन (Weight)</th>
+                            <th class="border border-slate-900 p-2 text-center">रेट (Rate ₹)</th>
+                            <th class="border border-slate-900 p-2 text-right">कुल भाड़ा (Freight)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="border border-slate-900 p-2.5" id="pr-goods-desc">Steel Goods</td>
+                            <td class="border border-slate-900 p-2.5 text-center" id="pr-weight">10 Tons</td>
+                            <td class="border border-slate-900 p-2.5 text-center" id="pr-rate">₹2,500</td>
+                            <td class="border border-slate-900 p-2.5 text-right font-bold" id="pr-total-freight">₹25,000</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Separated Payment Modes & Cheque Numbers on Bilty -->
+                <div class="grid grid-cols-2 gap-4 text-xs">
+                    <div class="space-y-1.5 bg-slate-50 border border-slate-200 p-2.5 rounded">
+                        <p class="font-bold underline text-slate-800">1. एडवांस भुगतान विवरण (Advance Payment):</p>
+                        <p>मोड: <strong id="pr-adv-method" class="text-indigo-900">Cash</strong></p>
+                        <p>Cheque / UTR No: <strong id="pr-adv-cheque-no" class="text-slate-900">-</strong></p>
+
+                        <p class="font-bold underline text-slate-800 pt-2">2. बाकी भुगतान विवरण (Balance Payment):</p>
+                        <p>मोड: <strong id="pr-bal-method" class="text-rose-900">To Pay</strong></p>
+                        <p>Cheque / UTR No: <strong id="pr-bal-cheque-no" class="text-slate-900">-</strong></p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-300 p-2.5 rounded space-y-1 text-right flex flex-col justify-center">
+                        <div>कुल भाड़ा (Total Freight): <strong>₹<span id="pr-summary-total">0</span></strong></div>
+                        <div class="text-emerald-700">एडवांस मिला (Advance): <strong>- ₹<span id="pr-summary-advance">0</span></strong></div>
+                        <div class="border-t border-slate-400 pt-1 font-extrabold text-sm text-rose-700">बाकी बैलेंस (Balance Due): ₹<span id="pr-summary-balance">0</span></div>
+                    </div>
+                </div>
+
+                <div class="mt-8 flex justify-between items-end pt-2 border-t border-slate-300 text-xs">
+                    <div class="text-center">
+                        <br>
+                        <p class="font-semibold">ड्राइवर / रिसीवर दस्तखत</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="font-bold">वास्ते: रुद्रांश रोडलाइंस (Rudransh Roadlines)</p>
+                        <br>
+                        <p class="font-semibold">(ऑथराइज्ड सिग्नेचर)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Persistent Data State
+        let tripsData = JSON.parse(localStorage.getItem('tms_trips_data_v3')) || [];
+
+        window.onload = function() {
+            if (tripsData.length === 0) {
+                seedSampleData();
+            } else {
+                renderAll();
+            }
+            document.getElementById('bookingDate').valueAsDate = new Date();
+            generateNextDocNumbers();
+        };
+
+        function saveState() {
+            localStorage.setItem('tms_trips_data_v3', JSON.stringify(tripsData));
+            renderAll();
+        }
+
+        // Auto Generate Next LR and Invoice Number
+        function generateNextDocNumbers() {
+            if (tripsData.length === 0) {
+                document.getElementById('lrNumber').value = 'LR-1001';
+                document.getElementById('invoiceNumber').value = 'INV-2026-001';
+                document.getElementById('auto-lr-display').innerText = 'LR-1001';
+            } else {
+                const maxLr = tripsData.reduce((max, item) => {
+                    const num = parseInt((item.lrNumber || '').replace('LR-', '')) || 1000;
+                    return num > max ? num : max;
+                }, 1000);
+                const nextLr = 'LR-' + (maxLr + 1);
+                document.getElementById('lrNumber').value = nextLr;
+                document.getElementById('invoiceNumber').value = 'INV-2026-00' + (maxLr + 1);
+                document.getElementById('auto-lr-display').innerText = nextLr;
+            }
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-slate-800', 'text-amber-400');
+                btn.classList.add('text-slate-300');
+            });
+            const activeNav = document.getElementById('nav-' + tabId);
+            if (activeNav) {
+                activeNav.classList.add('bg-slate-800', 'text-amber-400');
+                activeNav.classList.remove('text-slate-300');
+            }
+
+            if (tabId === 'vehicle-search') {
+                searchVehicleLedger();
+            }
+        }
+
+        function openNewBiltyForm() {
+            resetForm();
+            switchTab('new-bilty');
+        }
+
+        // Calculate Freight & Balance
+        function calculateFreight() {
+            const weight = parseFloat(document.getElementById('goodsWeight').value) || 0;
+            const rate = parseFloat(document.getElementById('freightRate').value) || 0;
+            
+            if (weight > 0 && rate > 0) {
+                document.getElementById('totalFreight').value = (weight * rate);
+            }
+
+            const total = parseFloat(document.getElementById('totalFreight').value) || 0;
+            const advance = parseFloat(document.getElementById('advancePaid').value) || 0;
+            const balance = total - advance;
+            document.getElementById('balanceAmount').value = balance >= 0 ? balance : 0;
+        }
+
+        // Submit Form
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editing-id').value;
+
+            const newTrip = {
+                id: editId ? editId : 'TRIP_' + Date.now(),
+                lrNumber: document.getElementById('lrNumber').value,
+                invoiceNumber: document.getElementById('invoiceNumber').value,
+                bookingDate: document.getElementById('bookingDate').value,
+                tripStatus: document.getElementById('tripStatus').value,
+                consignorName: document.getElementById('consignorName').value,
+                consignorPhone: document.getElementById('consignorPhone').value,
+                consigneeName: document.getElementById('consigneeName').value,
+                consigneePhone: document.getElementById('consigneePhone').value,
+                fromCity: document.getElementById('fromCity').value,
+                toCity: document.getElementById('toCity').value,
+                truckNumber: document.getElementById('truckNumber').value.toUpperCase().trim(),
+                driverInfo: document.getElementById('driverInfo').value,
+                goodsDescription: document.getElementById('goodsDescription').value,
+                goodsWeight: parseFloat(document.getElementById('goodsWeight').value) || 0,
+                freightRate: parseFloat(document.getElementById('freightRate').value) || 0,
+                totalFreight: parseFloat(document.getElementById('totalFreight').value) || 0,
+                
+                // Advance Details
+                advancePaid: parseFloat(document.getElementById('advancePaid').value) || 0,
+                advPaymentMethod: document.getElementById('advPaymentMethod').value,
+                advChequeNumber: document.getElementById('advChequeNumber').value,
+
+                // Balance Details
+                balanceAmount: parseFloat(document.getElementById('balanceAmount').value) || 0,
+                balPaymentMethod: document.getElementById('balPaymentMethod').value,
+                balChequeNumber: document.getElementById('balChequeNumber').value,
+
+                expenses: { diesel: 0, toll: 0, driver: 0, other: 0 }
+            };
+
+            if (editId) {
+                const index = tripsData.findIndex(t => t.id === editId);
+                if (index !== -1) {
+                    newTrip.expenses = tripsData[index].expenses || newTrip.expenses;
+                    tripsData[index] = newTrip;
+                }
+            } else {
+                tripsData.unshift(newTrip);
+            }
+
+            saveState();
+            resetForm();
+            openBiltyModal(newTrip.id);
+        }
+
+        function resetForm() {
+            document.getElementById('biltyForm').reset();
+            document.getElementById('editing-id').value = '';
+            document.getElementById('bookingDate').valueAsDate = new Date();
+            document.getElementById('save-btn-text').innerText = 'सेव करें & बिल्टी बनाएं (Save & Print)';
+            generateNextDocNumbers();
+        }
+
+        function editTrip(id) {
+            const trip = tripsData.find(t => t.id === id);
+            if (!trip) return;
+
+            document.getElementById('editing-id').value = trip.id;
+            document.getElementById('lrNumber').value = trip.lrNumber;
+            document.getElementById('invoiceNumber').value = trip.invoiceNumber || '';
+            document.getElementById('bookingDate').value = trip.bookingDate;
+            document.getElementById('tripStatus').value = trip.tripStatus;
+            document.getElementById('consignorName').value = trip.consignorName;
+            document.getElementById('consignorPhone').value = trip.consignorPhone;
+            document.getElementById('consigneeName').value = trip.consigneeName;
+            document.getElementById('consigneePhone').value = trip.consigneePhone;
+            document.getElementById('fromCity').value = trip.fromCity;
+            document.getElementById('toCity').value = trip.toCity;
+            document.getElementById('truckNumber').value = trip.truckNumber;
+            document.getElementById('driverInfo').value = trip.driverInfo;
+            document.getElementById('goodsDescription').value = trip.goodsDescription;
+            document.getElementById('goodsWeight').value = trip.goodsWeight;
+            document.getElementById('freightRate').value = trip.freightRate;
+            document.getElementById('totalFreight').value = trip.totalFreight;
+
+            document.getElementById('advancePaid').value = trip.advancePaid;
+            document.getElementById('advPaymentMethod').value = trip.advPaymentMethod || 'Cash';
+            document.getElementById('advChequeNumber').value = trip.advChequeNumber || '';
+
+            document.getElementById('balanceAmount').value = trip.balanceAmount;
+            document.getElementById('balPaymentMethod').value = trip.balPaymentMethod || 'To Pay (To Be Received)';
+            document.getElementById('balChequeNumber').value = trip.balChequeNumber || '';
+
+            document.getElementById('save-btn-text').innerText = 'अपडेट करें (Update Trip)';
+            switchTab('new-bilty');
+        }
+
+        function deleteTrip(id) {
+            if (confirm("क्या आप इस ट्रिप/इनवॉइस रिकॉर्ड को हटाना चाहते हैं?")) {
+                tripsData = tripsData.filter(t => t.id !== id);
+                saveState();
+            }
+        }
+
+        function renderAll() {
+            renderDashboardBottomStats();
+            renderAllTripsTable(tripsData);
+            populateExpenseSelect();
+            renderExpenseProfitTable();
+        }
+
+        function renderDashboardBottomStats() {
+            const totalBookings = tripsData.length;
+            const activeTrips = tripsData.filter(t => t.tripStatus === 'In-Transit').length;
+            const deliveredCount = tripsData.filter(t => t.tripStatus === 'Delivered').length;
+            const totalRevenue = tripsData.reduce((sum, t) => sum + (t.totalFreight || 0), 0);
+            const totalAdvance = tripsData.reduce((sum, t) => sum + (t.advancePaid || 0), 0);
+            const pendingBalance = tripsData.reduce((sum, t) => sum + (t.balanceAmount || 0), 0);
+
+            document.getElementById('dash-total-bookings').innerText = totalBookings;
+            document.getElementById('dash-active-trips').innerText = activeTrips;
+            document.getElementById('dash-delivered-count').innerText = deliveredCount;
+            document.getElementById('dash-total-revenue').innerText = totalRevenue.toLocaleString('en-IN');
+            document.getElementById('dash-advance-paid').innerText = totalAdvance.toLocaleString('en-IN');
+            document.getElementById('dash-pending-balance').innerText = pendingBalance.toLocaleString('en-IN');
+        }
+
+        function renderAllTripsTable(dataList) {
+            const tbody = document.getElementById('all-trips-table-body');
+            tbody.innerHTML = '';
+
+            if (dataList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="text-center p-6 text-slate-400">कोई ट्रिप डाटा नहीं मिला।</td></tr>`;
+                return;
+            }
+
+            dataList.forEach(t => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100 text-xs";
+                tr.innerHTML = `
+                    <td class="px-4 py-3 font-bold text-slate-900">${t.lrNumber}<div class="text-xs text-indigo-700">${t.invoiceNumber || '-'}</div></td>
+                    <td class="px-4 py-3"><div class="text-xs text-slate-400">${t.bookingDate}</div><div class="font-semibold text-slate-800">${t.consignorName}</div></td>
+                    <td class="px-4 py-3 font-medium">${t.fromCity} &rarr; ${t.toCity}<div class="font-bold text-slate-900">${t.truckNumber}</div></td>
+                    <td class="px-4 py-3">
+                        <div class="font-bold text-emerald-700">₹${(t.advancePaid || 0).toLocaleString('en-IN')} (${t.advPaymentMethod || 'Cash'})</div>
+                        <div class="text-[11px] text-slate-500">${t.advChequeNumber ? 'Chq/Ref: ' + t.advChequeNumber : ''}</div>
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="font-bold text-rose-700">₹${(t.balanceAmount || 0).toLocaleString('en-IN')} (${t.balPaymentMethod || 'To Pay'})</div>
+                        <div class="text-[11px] text-slate-500">${t.balChequeNumber ? 'Chq/Ref: ' + t.balChequeNumber : ''}</div>
+                    </td>
+                    <td class="px-4 py-3 font-bold text-slate-900 text-sm">₹${(t.totalFreight || 0).toLocaleString('en-IN')}</td>
+                    <td class="px-4 py-3 text-center">
+                        <div class="flex items-center justify-center space-x-1">
+                            <button onclick="openBiltyModal('${t.id}')" title="Print" class="p-1.5 text-slate-600 hover:bg-slate-200 rounded"><i class="fa-solid fa-print"></i></button>
+                            <button onclick="editTrip('${t.id}')" title="Edit" class="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded"><i class="fa-solid fa-pen-to-square"></i></button>
+                            <button onclick="deleteTrip('${t.id}')" title="Delete" class="p-1.5 text-rose-600 hover:bg-rose-50 rounded"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterTrips() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const statusFilter = document.getElementById('status-filter').value;
+
+            const filtered = tripsData.filter(t => {
+                const matchesQuery = (
+                    t.lrNumber.toLowerCase().includes(query) ||
+                    (t.invoiceNumber && t.invoiceNumber.toLowerCase().includes(query)) ||
+                    (t.advChequeNumber && t.advChequeNumber.toLowerCase().includes(query)) ||
+                    (t.balChequeNumber && t.balChequeNumber.toLowerCase().includes(query)) ||
+                    t.truckNumber.toLowerCase().includes(query) ||
+                    t.consignorName.toLowerCase().includes(query)
+                );
+
+                const matchesStatus = (statusFilter === 'ALL' || t.tripStatus === statusFilter);
+                return matchesQuery && matchesStatus;
+            });
+
+            renderAllTripsTable(filtered);
+        }
+
+        // Vehicle Ledger Search logic
+        function searchVehicleLedger() {
+            const query = (document.getElementById('vehicle-search-input')?.value || '').toUpperCase().trim();
+            const container = document.getElementById('vehicle-ledger-results');
+
+            if (!query) {
+                container.innerHTML = `
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-400">
+                        <i class="fa-solid fa-truck text-4xl mb-2 text-slate-300"></i>
+                        <p>गाड़ी का पूरा हिसाब देखने के लिए ऊपर बॉक्स में ट्रक नंबर टाइप करें।</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const vehicleTrips = tripsData.filter(t => t.truckNumber.toUpperCase().includes(query));
+
+            if (vehicleTrips.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white p-8 rounded-2xl border border-slate-200 text-center text-slate-500">
+                        <i class="fa-solid fa-circle-exclamation text-3xl mb-2 text-rose-500"></i>
+                        <p class="font-bold">गाड़ी नंबर "${query}" का कोई रिकॉर्ड नहीं मिला!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const totalFreightSum = vehicleTrips.reduce((s, t) => s + (t.totalFreight || 0), 0);
+            const totalAdvanceSum = vehicleTrips.reduce((s, t) => s + (t.advancePaid || 0), 0);
+            const totalBalanceSum = vehicleTrips.reduce((s, t) => s + (t.balanceAmount || 0), 0);
+            
+            let totalExpSum = 0;
+            vehicleTrips.forEach(t => {
+                const exp = t.expenses || {};
+                totalExpSum += (exp.diesel || 0) + (exp.toll || 0) + (exp.driver || 0) + (exp.other || 0);
+            });
+
+            const netProfitSum = totalFreightSum - totalExpSum;
+
+            container.innerHTML = `
+                <!-- Summary Card -->
+                <div class="bg-slate-900 text-white p-6 rounded-2xl shadow-lg border border-slate-800">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-4">
+                        <div>
+                            <span class="bg-amber-500 text-slate-950 font-black px-3 py-1 rounded-md text-sm uppercase">गाड़ी: ${query}</span>
+                            <p class="text-xs text-slate-400 mt-1">Rudransh Roadlines Vehicle Ledger Summary</p>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-xs text-slate-400">कुल ट्रिप्स</span>
+                            <h4 class="text-2xl font-bold text-amber-400">${vehicleTrips.length}</h4>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+                        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+                            <p class="text-[11px] text-slate-400">कुल भाड़ा (Freight)</p>
+                            <p class="text-lg font-bold text-emerald-400">₹${totalFreightSum.toLocaleString('en-IN')}</p>
+                        </div>
+                        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+                            <p class="text-[11px] text-slate-400">कुल एडवांस मिला</p>
+                            <p class="text-lg font-bold text-indigo-400">₹${totalAdvanceSum.toLocaleString('en-IN')}</p>
+                        </div>
+                        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+                            <p class="text-[11px] text-slate-400">कुल खर्चे (Fuel/Toll)</p>
+                            <p class="text-lg font-bold text-rose-400">₹${totalExpSum.toLocaleString('en-IN')}</p>
+                        </div>
+                        <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700">
+                            <p class="text-[11px] text-slate-400">शुद्ध प्रॉफिट (Profit)</p>
+                            <p class="text-lg font-bold ${netProfitSum >= 0 ? 'text-amber-400' : 'text-rose-500'}">₹${netProfitSum.toLocaleString('en-IN')}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trips List for this vehicle -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="p-4 border-b border-slate-100 font-bold text-slate-800 text-sm">
+                        ${query} की सभी ट्रिप डिटेल्स व Advance/Balance Cheque No इतिहास
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-600">
+                            <thead class="bg-slate-50 text-xs text-slate-500 uppercase font-semibold">
+                                <tr>
+                                    <th class="p-3">LR / Invoce</th>
+                                    <th class="p-3">दिनांक & रूट</th>
+                                    <th class="p-3">पार्टी (Consignor)</th>
+                                    <th class="p-3">एडवांस Cheque / Mode</th>
+                                    <th class="p-3">बाकी Cheque / Mode</th>
+                                    <th class="p-3">कुल भाड़ा</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-xs">
+                                ${vehicleTrips.map(vt => `
+                                    <tr class="hover:bg-slate-50">
+                                        <td class="p-3 font-bold text-slate-900">${vt.lrNumber}<div class="text-xs text-indigo-700">${vt.invoiceNumber || '-'}</div></td>
+                                        <td class="p-3"><div class="text-xs font-semibold">${vt.bookingDate}</div><div>${vt.fromCity} &rarr; ${vt.toCity}</div></td>
+                                        <td class="p-3 font-medium text-slate-800">${vt.consignorName}</td>
+                                        <td class="p-3">
+                                            <span class="bg-emerald-50 text-emerald-900 font-bold px-2 py-0.5 rounded">₹${(vt.advancePaid||0).toLocaleString('en-IN')} (${vt.advPaymentMethod||'Cash'})</span>
+                                            <div class="text-[11px] text-slate-600 mt-1">${vt.advChequeNumber ? 'Chq: ' + vt.advChequeNumber : ''}</div>
+                                        </td>
+                                        <td class="p-3">
+                                            <span class="bg-rose-50 text-rose-900 font-bold px-2 py-0.5 rounded">₹${(vt.balanceAmount||0).toLocaleString('en-IN')} (${vt.balPaymentMethod||'To Pay'})</span>
+                                            <div class="text-[11px] text-slate-600 mt-1">${vt.balChequeNumber ? 'Chq: ' + vt.balChequeNumber : ''}</div>
+                                        </td>
+                                        <td class="p-3 font-bold text-slate-900">₹${(vt.totalFreight||0).toLocaleString('en-IN')}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function populateExpenseSelect() {
+            const select = document.getElementById('exp-lr-select');
+            select.innerHTML = '<option value="">-- ट्रिप / Invoice चुनें --</option>';
+            tripsData.forEach(t => {
+                select.innerHTML += `<option value="${t.id}">${t.lrNumber} (${t.invoiceNumber || 'No Inv'}) - ${t.truckNumber}</option>`;
+            });
+        }
+
+        function handleExpenseSubmit(e) {
+            e.preventDefault();
+            const tripId = document.getElementById('exp-lr-select').value;
+            if (!tripId) return alert('कृपया ट्रिप चुनें!');
+
+            const trip = tripsData.find(t => t.id === tripId);
+            if (trip) {
+                trip.expenses = {
+                    diesel: parseFloat(document.getElementById('exp-diesel').value) || 0,
+                    toll: parseFloat(document.getElementById('exp-toll').value) || 0,
+                    driver: parseFloat(document.getElementById('exp-driver').value) || 0,
+                    other: parseFloat(document.getElementById('exp-other').value) || 0
+                };
+                saveState();
+                alert('खर्चा अपडेट हो गया!');
+                document.getElementById('expenseForm').reset();
+            }
+        }
+
+        function renderExpenseProfitTable() {
+            const tbody = document.getElementById('expense-profit-tbody');
+            tbody.innerHTML = '';
+
+            if (tripsData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="text-center p-4 text-slate-400">कोई रिकॉर्ड नहीं मिला।</td></tr>`;
+                return;
+            }
+
+            tripsData.forEach(t => {
+                const exp = t.expenses || { diesel: 0, toll: 0, driver: 0, other: 0 };
+                const totalExp = (exp.diesel || 0) + (exp.toll || 0) + (exp.driver || 0) + (exp.other || 0);
+                const netProfit = (t.totalFreight || 0) - totalExp;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-3">
+                        <div class="font-bold text-slate-800">${t.lrNumber} (${t.truckNumber})</div>
+                        <div class="text-xs text-indigo-700">Invoice: ${t.invoiceNumber || '-'}</div>
+                    </td>
+                    <td class="p-3 font-semibold text-slate-900">₹${(t.totalFreight || 0).toLocaleString('en-IN')}</td>
+                    <td class="p-3 text-rose-600 font-medium">₹${totalExp.toLocaleString('en-IN')}</td>
+                    <td class="p-3 font-bold ${netProfit >= 0 ? 'text-emerald-600' : 'text-rose-700'}">₹${netProfit.toLocaleString('en-IN')}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Open Printable Modal
+        function openBiltyModal(id) {
+            const t = tripsData.find(trip => trip.id === id);
+            if (!t) return;
+
+            document.getElementById('pr-lr-no').innerText = t.lrNumber;
+            document.getElementById('pr-invoice-no').innerText = t.invoiceNumber || 'INV-N/A';
+            document.getElementById('pr-date').innerText = t.bookingDate;
+            document.getElementById('pr-consignor-name').innerText = t.consignorName;
+            document.getElementById('pr-consignor-phone').innerText = 'Ph: ' + (t.consignorPhone || 'N/A');
+            document.getElementById('pr-consignee-name').innerText = t.consigneeName;
+            document.getElementById('pr-consignee-phone').innerText = 'Ph: ' + (t.consigneePhone || 'N/A');
+            document.getElementById('pr-from-city').innerText = t.fromCity;
+            document.getElementById('pr-to-city').innerText = t.toCity;
+            document.getElementById('pr-truck-no').innerText = t.truckNumber;
+            document.getElementById('pr-driver').innerText = t.driverInfo || 'N/A';
+            document.getElementById('pr-goods-desc').innerText = t.goodsDescription || 'General Goods';
+            document.getElementById('pr-weight').innerText = (t.goodsWeight || '0') + ' Tons';
+            document.getElementById('pr-rate').innerText = '₹' + (t.freightRate || 0).toLocaleString('en-IN');
+            document.getElementById('pr-total-freight').innerText = '₹' + (t.totalFreight || 0).toLocaleString('en-IN');
+            
+            document.getElementById('pr-adv-method').innerText = (t.advPaymentMethod || 'Cash') + ' (₹' + (t.advancePaid || 0).toLocaleString('en-IN') + ')';
+            document.getElementById('pr-adv-cheque-no').innerText = t.advChequeNumber || 'N/A';
+
+            document.getElementById('pr-bal-method').innerText = (t.balPaymentMethod || 'To Pay') + ' (₹' + (t.balanceAmount || 0).toLocaleString('en-IN') + ')';
+            document.getElementById('pr-bal-cheque-no').innerText = t.balChequeNumber || 'N/A';
+
+            document.getElementById('pr-summary-total').innerText = (t.totalFreight || 0).toLocaleString('en-IN');
+            document.getElementById('pr-summary-advance').innerText = (t.advancePaid || 0).toLocaleString('en-IN');
+            document.getElementById('pr-summary-balance').innerText = (t.balanceAmount || 0).toLocaleString('en-IN');
+
+            document.getElementById('bilty-print-modal').classList.remove('hidden');
+        }
+
+        function closeBiltyModal() {
+            document.getElementById('bilty-print-modal').classList.add('hidden');
+        }
+
+        // Sample Data Seed
+        function seedSampleData() {
+            tripsData = [
+                {
+                    id: 'TRIP_1',
+                    lrNumber: 'LR-1001',
+                    invoiceNumber: 'INV-2026-001',
+                    bookingDate: '2026-10-10',
+                    tripStatus: 'In-Transit',
+                    consignorName: 'सर्विसेज इंडस्ट्रीज लिमिटेड',
+                    consignorPhone: '9822012345',
+                    consigneeName: 'आर. के. लॉजिस्टिक्स दिल्ली',
+                    consigneePhone: '9811098765',
+                    fromCity: 'Mumbai',
+                    toCity: 'Delhi',
+                    truckNumber: 'MH-04-GP-5512',
+                    driverInfo: 'सुरेश कुमार (9765432100)',
+                    goodsDescription: 'Industrial Steel Pipe',
+                    goodsWeight: 18,
+                    freightRate: 3500,
+                    totalFreight: 63000,
+                    advancePaid: 25000,
+                    advPaymentMethod: 'NEFT',
+                    advChequeNumber: 'UTR-ADV-998811',
+                    balanceAmount: 38000,
+                    balPaymentMethod: 'Cheque',
+                    balChequeNumber: 'BAL-CHQ-443322',
+                    expenses: { diesel: 28000, toll: 4500, driver: 3000, other: 1000 }
+                },
+                {
+                    id: 'TRIP_2',
+                    lrNumber: 'LR-1002',
+                    invoiceNumber: 'INV-2026-002',
+                    bookingDate: '2026-10-12',
+                    tripStatus: 'Delivered',
+                    consignorName: 'बालाजी एग्रो मिल्स',
+                    consignorPhone: '9422112233',
+                    consigneeName: 'जयपुर ट्रेडर्स',
+                    consigneePhone: '9414055667',
+                    fromCity: 'Indore',
+                    toCity: 'Jaipur',
+                    truckNumber: 'MP-09-BC-8890',
+                    driverInfo: 'रमेश यादव',
+                    goodsDescription: 'गेहूँ की बोरियाँ',
+                    goodsWeight: 20,
+                    freightRate: 2100,
+                    totalFreight: 42000,
+                    advancePaid: 20000,
+                    advPaymentMethod: 'Cash',
+                    advChequeNumber: 'N/A (Cash)',
+                    balanceAmount: 22000,
+                    balPaymentMethod: 'UPI',
+                    balChequeNumber: 'UPI-BAL-771100',
+                    expenses: { diesel: 18000, toll: 2200, driver: 2000, other: 500 }
+                }
+            ];
+            saveState();
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(tripsData, null, 2));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", `Rudransh_Roadlines_Backup_${new Date().toISOString().slice(0,10)}.json`);
+            dlAnchorElem.click();
+        }
+    </script>
+</body>
+</html>
